@@ -37,7 +37,5 @@ PythonとArduinoとでシリアル通信をするためのライブラリ、pySe
 reporter.py
 
     import filename
-    p = filename.Filename
-
-
+    p = filename.Filename()
 
