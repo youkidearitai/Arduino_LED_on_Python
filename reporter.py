@@ -9,6 +9,7 @@ import printer
 import random_write
 import hundred_push
 import on_off
+import ahiruyaki
 
 # Arduinoとシリアル通信でつなぐ。第一引数の部分はArduino IDEの右下を参照。
 # WindowsならCOMなんとかMac/Linuxなら/dev/で始まる。
