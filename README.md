@@ -4,7 +4,7 @@ ArduinoとPythonを使ってLチカできるようにします。Pythonのプロ
 
 ## 回路図
 
-![](./images/Arduino-part-1-bread-boad.png)
+![](./images/Arduino-part-1-bread-board.png)
 
 ### 必要なもの
 
