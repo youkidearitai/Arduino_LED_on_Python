@@ -36,5 +36,5 @@ try:
 except BaseException:
     # Ctrl + Cなどのプログラム終了、もしくは何かしらのエラーで止めるときに使う
     ser.close()
-    p.closed()
+    print("closed connection")
 
