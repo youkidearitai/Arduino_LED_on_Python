@@ -18,9 +18,3 @@ class OnOff(object):
         print("Lチカ!!: {0}".format(message))
         return result
 
-    def closed(self):
-        """
-        プログラムを終了するときに closed connection と出力して終わりを表示させる
-        """
-        print("closed connection")
-

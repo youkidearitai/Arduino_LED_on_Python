@@ -27,9 +27,3 @@ class RandomWrite(object):
             print("Lチカ!!: {0}".format(self.counter))
             return False
 
-    def closed(self):
-        """
-        プログラムを終了するときに closed connection と出力して終わりを表示させる
-        """
-        print("closed connection")
-
