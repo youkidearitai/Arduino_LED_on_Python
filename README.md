@@ -34,6 +34,8 @@ PythonとArduinoとでシリアル通信をするためのライブラリ、pySe
 4. reporter.pyに作成したfilenameをimport
 5. reporter.pyの変数pへインスタンスを作成
 
+reporter.py
+
     import filename
     p = filename.Filename
 
