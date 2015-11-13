@@ -27,6 +27,3 @@ class RandomWrite(object):
             print("Lチカ!!: {0}".format(self.counter))
             return False
 
-    def mode(self):
-        return "ランダム"
-

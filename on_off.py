@@ -18,6 +18,3 @@ class OnOff(object):
         print("Lチカ!!: {0}".format(message))
         return result
 
-    def mode(self):
-        return "ON/OFFモード"
-
