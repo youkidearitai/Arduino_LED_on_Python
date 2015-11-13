@@ -42,10 +42,10 @@ reporter.py
 
 filename.py
 
-class Filename(object):
-    def push(self, line):
-        return True
-
-    def mode(self):
-        return "これはデモ用の機能です。"
+    class Filename(object):
+        def push(self, line):
+            return True
+    
+        def mode(self):
+            return "これはデモ用の機能です。"
 
