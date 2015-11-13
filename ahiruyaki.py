@@ -3,8 +3,6 @@
 
 import requests_oauthlib
 import random
-import json
-import datetime
 
 class Ahiruyaki(object):
     def __init__(self):
@@ -17,8 +15,7 @@ class Ahiruyaki(object):
         self.counter = 0
         self.letsAhiruyaki = 10
 
-        # あひる焼きレシピ
-        self.ahiruyakiRecipe = [
+        self.ahiruyakiList = [
                 'あひる焼き',
                 'あひるのあひる焼き',
                 'Arduinoであひる焼きマシンをつくったぜ',
@@ -39,15 +36,9 @@ class Ahiruyaki(object):
 
     def push(self, line):
         if self.counter % self.letsAhiruyaki == self.letsAhiruyaki - 1:
-            random.shuffle(self.ahiruyakiRecipe)
+            random.shuffle(self.ahiruyakiList)
 
-            # まえのあひる焼きと同じレシピだとあひる焼き出来ないし楽しくないのでちがうあひる焼きレシピにする
-            if self.beforeAhiruyaki == self.ahiruyakiRecipe[0]:
-                self.ahiruyakiRecipeKey = 1
-            else:
-                self.ahiruyakiRecipeKey = 0
-
-            result = self.twitter.post(
+            self.twitter.post(
                     "https://api.twitter.com/1.1/statuses/update.json",
                     {
                         "status": "{0}にあひる焼き {1}".format(
