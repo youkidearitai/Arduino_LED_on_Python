@@ -16,9 +16,5 @@ class HundredPush(object):
 
         return False
 
-    def closed(self):
-        """
-        プログラムを終了するときに closed connection と出力して終わりを表示させる
-        """
-        print("closed connection")
-
+    def mode(self):
+        return "100回のうち1回"
