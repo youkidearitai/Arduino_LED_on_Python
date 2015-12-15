@@ -28,11 +28,11 @@ void loop() {
     }
   }
 
-  if (stat == HIGH && old_stat == LOW) {
+  if (stat == LOW && old_stat == HIGH) {
     Serial.println("in");
   }
 
-  if (changeStat == HIGH && old_changeStat == LOW) {
+  if (changeStat == LOW && old_changeStat == HIGH) {
     Serial.println("change");
   }
 
