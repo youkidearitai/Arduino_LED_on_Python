@@ -24,7 +24,7 @@ void loop() {
     }
   }
 
-  if (stat == HIGH && old_stat == LOW) {
+  if (stat == LOW && old_stat == HIGH) {
     Serial.println("in");
   }
 
