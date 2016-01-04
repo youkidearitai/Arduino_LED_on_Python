@@ -3,36 +3,51 @@
 
 import serial
 import sys
-import time
+import datetime
+import json
+from geventwebsocket.handler import WebSocketHandler
+from gevent import pywsgi, sleep
 
-def main():
+def accelerator_graph(environment, start_response):
     ser = serial.Serial('/dev/cu.usbserial-A90173KX', 9600);
+    ws = environment['wsgi.websocket']
 
-    try:
-        while ser.readable():
-            line = ser.readline().strip()
-            acle = line.split(",")
+    while ser.readable():
+        d = datetime.datetime.today()
+        line = ser.readline().strip()
+        acle = [d.microsecond]
+        acle += line.split(",")
+        ws.send(json.dumps(acle))
+    ser.close()
 
-            moved_string = ""
+#        moved_string = ""
+#            if is_move(acle[0]):
+#                moved_string = moved_string + "x moved {0:03d} ".format(
+#                    move_pos(acle[0])
+#                )
+#
+#            if is_move(acle[1]):
+#                moved_string = moved_string + "y moved {0:03d} ".format(
+#                    move_pos(acle[1])
+#                )
+#
+#            if is_move(acle[2], 134):
+#                moved_string = moved_string + "z moved {0:03d}".format(
+#                    move_pos(acle[2], 333 + 134)
+#                )
+#
 
-            if is_move(acle[0]):
-                moved_string = moved_string + "x moved {0:03d} ".format(
-                    move_pos(acle[0])
-                )
+def graph_httpd(environment, start_response):
+    path = environment["PATH_INFO"]
 
-            if is_move(acle[1]):
-                moved_string = moved_string + "y moved {0:03d} ".format(
-                    move_pos(acle[1])
-                )
+    if path == "/":
+        start_response("200 OK", [("Content-Type", "text/html")])
+        return open('./graph.html')
+    elif path == "/graph":
+        return accelerator_graph(environment, start_response)
 
-            if is_move(acle[2], 134):
-                moved_string = moved_string + "z moved {0:03d}".format(
-                    move_pos(acle[2], 333 + 134)
-                )
+    raise Exception("404 Not found")
 
-            print("move status: {0}".format(moved_string))
-    except KeyboardInterrupt:
-        ser.close()
 
 def is_move(pos, base = 0):
     p = int(pos, 10)
@@ -46,4 +61,6 @@ def move_pos(pos, base = 333):
 
 
 if __name__ == "__main__":
-    main()
+    server = pywsgi.WSGIServer(('127.0.0.1', 8080), graph_httpd, handler_class=WebSocketHandler)
+    server.serve_forever()
+
