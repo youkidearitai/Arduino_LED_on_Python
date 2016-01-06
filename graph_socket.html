@@ -17,7 +17,7 @@ window.onload = function() {
     var colors = d3.scale.category10();
     var d3Line = d3.svg.line()
     .x(function(d,i){return i * 10})
-    .y(function(d,i){return d});
+    .y(function(d,i){return 800 - d});
 
     var points = {
         x: new Array(),
