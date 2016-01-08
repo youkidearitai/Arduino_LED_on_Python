@@ -9,8 +9,6 @@ from geventwebsocket.handler import WebSocketHandler
 from gevent import pywsgi, sleep
 
 class GraphApplication(object):
-    application = ['xmpp', 'soap']
-
     def __call__(self, environment, start_response):
         path = environment["PATH_INFO"]
 
@@ -34,7 +32,7 @@ class GraphApplication(object):
             raise Exception("404 Not found")
 
     def app_protocol(self, path_info):
-        return 'xmpp'
+        return 'chat'
 
 if __name__ == "__main__":
     ser = serial.Serial('/dev/cu.usbserial-A90173KX', 9600);

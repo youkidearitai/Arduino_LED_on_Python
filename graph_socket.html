@@ -11,7 +11,7 @@
 <script type="text/javascript">
 window.onload = function() {
     var stage;
-    var socket = new WebSocket('ws://127.0.0.1:8080/graph', ['soap', 'xmpp']);
+    var socket = new WebSocket('ws://127.0.0.1:8080/graph', ['soap', 'chat']);
     stage = d3.select("#d3graph").append("svg:svg").attr("width", 800).attr("height", 600);
 
     var colors = d3.scale.category10();
