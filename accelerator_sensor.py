@@ -8,34 +8,37 @@ import json
 from geventwebsocket.handler import WebSocketHandler
 from gevent import pywsgi, sleep
 
-def accelerator_graph(environment, start_response):
-    ws = environment['wsgi.websocket']
+class GraphApplication(object):
+    application = ['xmpp', 'soap']
 
-    while ser.readable():
-        d = datetime.datetime.today()
-        line = ser.readline().strip()
-        acle = [d.microsecond]
-        acle += line.split(",")
-        ws.send(json.dumps(acle))
-    ser.close()
+    def __call__(self, environment, start_response):
+        path = environment["PATH_INFO"]
 
-def graph_httpd(environment, start_response):
-    path = environment["PATH_INFO"]
+        if path == "/":
+            start_response("200 OK", [("Content-Type", "text/html")])
+            return open('./graph.html')
+        elif path == '/d3':
+            start_response("200 OK", [("Content-Type", "text/html")])
+            return open('./graph_socket.html')
+        elif path == "/graph":
+            ws = environment['wsgi.websocket']
 
-    if path == "/":
-        start_response("200 OK", [("Content-Type", "text/html")])
-        return open('./graph.html')
-    elif path == '/d3':
-        start_response("200 OK", [("Content-Type", "text/html")])
-        return open('./graph_socket.html')
-    elif path == "/graph":
-        return accelerator_graph(environment, start_response)
+            while ser.readable():
+                d = datetime.datetime.today()
+                line = ser.readline().strip()
+                acle = [d.microsecond]
+                acle += line.split(",")
+                ws.send(json.dumps(acle))
+            ser.close()
+        else:
+            raise Exception("404 Not found")
 
-    raise Exception("404 Not found")
+    def app_protocol(self, path_info):
+        return 'xmpp'
 
 if __name__ == "__main__":
     ser = serial.Serial('/dev/cu.usbserial-A90173KX', 9600);
 
-    server = pywsgi.WSGIServer(('127.0.0.1', 8080), graph_httpd, handler_class=WebSocketHandler)
+    server = pywsgi.WSGIServer(('127.0.0.1', 8080), GraphApplication(), handler_class=WebSocketHandler)
     server.serve_forever()
 
