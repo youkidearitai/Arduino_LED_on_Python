@@ -8,6 +8,9 @@ import json
 from geventwebsocket.handler import WebSocketHandler
 from gevent import pywsgi, sleep
 
+def angle(level):
+    return [int(level)]
+
 class GraphApplication(object):
     def __call__(self, environment, start_response):
         path = environment["PATH_INFO"]
@@ -26,6 +29,9 @@ class GraphApplication(object):
                 line = ser.readline().strip()
                 acle = [d.microsecond]
                 acle += line.split(",")
+                acle += angle(line.split(",")[0])
+                acle += angle(line.split(",")[1])
+                acle += angle(line.split(",")[2])
                 ws.send(json.dumps(acle))
             ser.close()
         else:

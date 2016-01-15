@@ -7,6 +7,7 @@
 
 <body>
 <div id="d3graph" style="border:1px solid #FFF; margin-bottom:10px"></div>
+<div id="angle"></div>
 </body>
 <script type="text/javascript">
 window.onload = function() {
@@ -37,7 +38,19 @@ window.onload = function() {
         update(values[1], 'x');
         update(values[2], 'y');
         update(values[3], 'z');
+        stage.selectAll(".fourtext").remove();
+
+        textUpdate(values[4], 30, 30);
+
+        textUpdate(Math.atan2(values[5] - (1.65 / (5 / 1024)), values[6] - (2.31 / (5 / 1024))) / Math.PI * 180 + 180, 200, 30);
+        textUpdate(values[5], 30, 50);
+        textUpdate(Math.atan2(values[4] - (1.65 / (5 / 1024)), values[6] - (2.31 / (5 / 1024))) / Math.PI * 180 + 180, 200, 50);
+        textUpdate(values[6], 30, 70);
     };
+
+    function textUpdate(value, x, y) {
+        stage.append("text").attr("class", "fourtext").attr("x", x).attr("y", y).text(value);
+    }
 
     function update(value, key) {
         points[key].push(value);
