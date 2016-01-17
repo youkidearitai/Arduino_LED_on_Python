@@ -33,6 +33,39 @@ window.onload = function() {
         z: 3
     };
 
+    // 角度を求める関数
+    function degress(x, z) {
+        // x軸とy軸に対してなにも加速させてない時のデフォルト値
+        var xy_base = 1.65 / (5 / 1024);
+        // z軸に対してなにも加速させてない時のデフォルト値
+        var z_base = 2.31 / (5 / 1024);
+        // アークタンジェントを求める
+        var radian = Math.atan2(x - xy_base, z - z_base);
+        // ラジアンから角度へ変更し、値を0から360になるように調整
+        return radian / Math.PI * 180 + 180;
+    }
+
+    // 加速度からどの方向で動いているのか求める関数
+    function direction(key) {
+        var point = points[key].slice(-20);
+        var max = 0, min = 9999;
+        var max_key = 0, min_key = 0;
+
+        for (var i = 0; i < point.length; i++) {
+            if (point[i] > max) {
+                max_key = i;
+                max = point[i];
+            }
+            if (point[i] < min) {
+                min_key = i;
+                min = point[i];
+            }
+        }
+
+        // maxとminのキーを比較して、大きい方がプラス、小さいほうがマイナスとする
+        return max_key > min_key;
+    }
+
     socket.onmessage = function(e) {
         var values = JSON.parse(e.data);
         update(values[1], 'x');
@@ -41,11 +74,13 @@ window.onload = function() {
         stage.selectAll(".fourtext").remove();
 
         textUpdate(values[1], 30, 30);
-
-        textUpdate(Math.atan2(values[1] - (1.65 / (5 / 1024)), values[3] - (2.31 / (5 / 1024))) / Math.PI * 180 + 180, 200, 30);
+        textUpdate(degress(values[1], values[3]), 200, 30);
         textUpdate(values[2], 30, 50);
-        textUpdate(Math.atan2(values[2] - (1.65 / (5 / 1024)), values[3] - (2.31 / (5 / 1024))) / Math.PI * 180 + 180, 200, 50);
+        textUpdate(degress(values[2], values[3]), 200, 50);
         textUpdate(values[3], 30, 70);
+
+        textUpdate(direction('x') ? "x move: +" : "x move: -", 400, 30);
+        textUpdate(direction('y') ? "y move: +" : "y move: -", 400, 50);
     };
 
     function textUpdate(value, x, y) {
