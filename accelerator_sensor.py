@@ -9,16 +9,13 @@ from geventwebsocket.handler import WebSocketHandler
 from gevent import pywsgi, sleep
 
 def angle(level):
-    return [int(level)]
+    return int(level)
 
 class GraphApplication(object):
     def __call__(self, environment, start_response):
         path = environment["PATH_INFO"]
 
-        if path == "/":
-            start_response("200 OK", [("Content-Type", "text/html")])
-            return open('./graph.html')
-        elif path == '/d3':
+        if path == '/':
             start_response("200 OK", [("Content-Type", "text/html")])
             return open('./graph_socket.html')
         elif path == "/graph":
@@ -27,12 +24,12 @@ class GraphApplication(object):
             while ser.readable():
                 d = datetime.datetime.today()
                 line = ser.readline().strip()
-                acle = [d.microsecond]
-                acle += line.split(",")
-                acle += angle(line.split(",")[0])
-                acle += angle(line.split(",")[1])
-                acle += angle(line.split(",")[2])
-                ws.send(json.dumps(acle))
+                accel = [d.microsecond]
+                values = line.split(",")
+                accel.append(angle(values[0]))
+                accel.append(angle(values[1]))
+                accel.append(angle(values[2]))
+                ws.send(json.dumps(accel))
             ser.close()
         else:
             raise Exception("404 Not found")
