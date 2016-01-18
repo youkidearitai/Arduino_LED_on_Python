@@ -21,16 +21,18 @@ class GraphApplication(object):
         elif path == "/graph":
             ws = environment['wsgi.websocket']
 
-            while ser.readable():
-                d = datetime.datetime.today()
-                line = ser.readline().strip()
-                accel = [d.microsecond]
-                values = line.split(",")
-                accel.append(angle(values[0]))
-                accel.append(angle(values[1]))
-                accel.append(angle(values[2]))
-                ws.send(json.dumps(accel))
-            ser.close()
+            try:
+                while ser.readable():
+                    d = datetime.datetime.today()
+                    line = ser.readline().strip()
+                    accel = [d.microsecond]
+                    values = line.split(",")
+                    accel.append(angle(values[0]))
+                    accel.append(angle(values[1]))
+                    accel.append(angle(values[2]))
+                    ws.send(json.dumps(accel))
+            except KeyboardInterrupt:
+                ser.close()
         else:
             raise Exception("404 Not found")
 
