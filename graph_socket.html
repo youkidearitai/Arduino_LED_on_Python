@@ -42,7 +42,7 @@ window.onload = function() {
         // アークタンジェントを求める
         var radian = Math.atan2(x - xy_base, z - z_base);
         // ラジアンから角度へ変更し、値を0から360になるように調整
-        return radian / Math.PI * 180 + 180;
+        return radian * (180 / Math.PI) + 180;
     }
 
     // 加速度からどの方向で動いているのか求める関数
