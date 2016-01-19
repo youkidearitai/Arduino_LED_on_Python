@@ -35,12 +35,10 @@ window.onload = function() {
 
     // 角度を求める関数
     function degress(x, z) {
-        // x軸とy軸に対してなにも加速させてない時のデフォルト値
-        var xy_base = 1.65 / (5 / 1024);
-        // z軸に対してなにも加速させてない時のデフォルト値
-        var z_base = 2.31 / (5 / 1024);
+        // なにも加速させてない時のデフォルト値
+        var base = 1.65 / (5 / 1024);
         // アークタンジェントを求める
-        var radian = Math.atan2(x - xy_base, z - z_base);
+        var radian = Math.atan2(x - base, z - base);
         // ラジアンから角度へ変更し、値を0から360になるように調整
         return radian * (180 / Math.PI) + 180;
     }
