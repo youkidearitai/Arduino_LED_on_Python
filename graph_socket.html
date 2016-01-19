@@ -71,6 +71,45 @@ window.onload = function() {
         return max_key - min_key;
     }
 
+    var pie = d3.layout.pie()
+        .sort(null);
+
+    var arc = d3.svg.arc()
+        .innerRadius(50)
+        .outerRadius(100);
+
+    var colorX = d3.scale.ordinal()
+          .range(["red","green"]);
+
+    var colorY = d3.scale.ordinal()
+          .range(["orange","blue"]);
+
+    function circleY(degress) {
+        stage
+            .append("g")
+            .attr("class", "circle")
+            .selectAll("path")
+            .data(pie([degress / 360 * 100, (360 - degress) / 360 * 100]))
+            .enter()
+            .append("path")
+            .attr("transform", "translate(700, 500)")
+            .attr("d", function(c) { return arc(c); })
+            .attr("fill",function(d) { return colorY(d.data); }); 
+    }
+
+    function circleX(degress) {
+        stage
+            .append("g")
+            .attr("class", "circle")
+            .selectAll("path")
+            .data(pie([degress / 360 * 100, (360 - degress) / 360 * 100]))
+            .enter()
+            .append("path")
+            .attr("transform", "translate(450, 500)")
+            .attr("d", function(c) { return arc(c); })
+            .attr("fill",function(d) { return colorX(d.data); }); 
+    }
+
     socket.onmessage = function(e) {
         var values = JSON.parse(e.data);
         update(values[1], 'x');
@@ -83,6 +122,10 @@ window.onload = function() {
         textUpdate(values[2], 30, 50);
         textUpdate(degress(values[2], values[3]), 200, 50);
         textUpdate(values[3], 30, 70);
+
+        stage.selectAll(".circle").remove();
+        circleX(degress(values[1], values[3]));
+        circleY(degress(values[2], values[3]));
 
         var x_move = direction('x');
         if (x_move !== false) {
