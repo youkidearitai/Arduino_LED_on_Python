@@ -70,6 +70,8 @@ window.onload = function() {
     }
 
     var pie = d3.layout.pie()
+        .startAngle(-90 * (Math.PI / 180))
+        .endAngle(270 * (Math.PI / 180))
         .sort(null);
 
     var arc = d3.svg.arc()
