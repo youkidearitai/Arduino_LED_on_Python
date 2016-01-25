@@ -36,9 +36,6 @@ class GraphApplication(object):
         else:
             raise Exception("404 Not found")
 
-    def app_protocol(self, path_info):
-        return 'chat'
-
 if __name__ == "__main__":
     ser = serial.Serial('/dev/cu.usbserial-A90173KX', 9600);
 
