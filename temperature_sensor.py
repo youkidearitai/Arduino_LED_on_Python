@@ -10,12 +10,6 @@ if __name__ == "__main__":
     conn = sqlite3.connect(
         './temperature_sensor.sqlite'
     )
-    #conn = sqlite3.connect(
-    #    './temperature_sensor.sqlite',
-    #    detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES
-    #)
-    #sqlite3.dbapi2.converters['DATETIME'] = sqlite3.dbapi2.converters['TIMESTAMP']
-
 
     try:
         while ser.readable():
