@@ -5,7 +5,6 @@
 import serial
 import time
 
-import printer
 import random_write
 import hundred_push
 import on_off
@@ -15,7 +14,6 @@ import ahiruyaki
 # WindowsならCOMなんとかMac/Linuxなら/dev/で始まる。
 ser = serial.Serial('/dev/cu.usbmodem1421', 9600);
 
-#p = printer.Printer()
 #p = on_off.OnOff()
 p = random_write.RandomWrite()
 #p = hundred_push.HundredPush()
