@@ -14,9 +14,15 @@ import ahiruyaki
 # WindowsならCOMなんとかMac/Linuxなら/dev/で始まる。
 ser = serial.Serial('/dev/cu.usbmodem1421', 9600);
 
-#p = on_off.OnOff()
-p = random_write.RandomWrite()
-#p = hundred_push.HundredPush()
+modes = [
+    on_off.OnOff(),
+    random_write.RandomWrite(),
+    hundred_push.HundredPush(),
+    ahiruyaki.Ahiruyaki()
+]
+mode = 0
+p = modes[mode]
+print(p.mode())
 
 # シリアル通信ができている間は、無限ループさせる
 try:
@@ -28,7 +34,11 @@ try:
                 ser.write('1')
             else:
                 ser.write('0')
-
+        elif line == "change\r\n":
+            # モードチェンジするボタンを押した！
+            mode = (mode + 1) % len(modes)
+            p = modes[mode]
+            print("モードをチェンジ!: {0}".format(p.mode()))
         elif line != "":
             print(line.strip())
 
