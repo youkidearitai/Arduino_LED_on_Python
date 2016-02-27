@@ -1,0 +1,169 @@
+<html>
+<head>
+    <meta charset = "utf-8">
+    <title>加速度センサー</title>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+</head>
+
+<body>
+<div id="d3graph" style="border:1px solid #FFF; margin-bottom:10px"></div>
+<div id="angle"></div>
+</body>
+<script type="text/javascript">
+window.onload = function() {
+    var stage;
+    var socket = new WebSocket('ws://127.0.0.1:8080/graph');
+    stage = d3.select("#d3graph").append("svg:svg").attr("width", 800).attr("height", 600);
+
+    var colors = d3.scale.category10();
+    var d3Line = d3.svg.line()
+    .x(function(d,i){return i * 10})
+    .y(function(d,i){return (800 - d) / 1024 * 600});
+
+    var points = {
+        x: new Array(),
+        y: new Array(),
+        z: new Array()
+    };
+
+    // http://bl.ocks.org/aaizemberg/78bd3dade9593896a59d
+    var point_colors = {
+        x: 1,
+        y: 2,
+        z: 3
+    };
+
+    // 角度を求める関数
+    function degress(x, z) {
+        // なにも加速させてない時のデフォルト値
+        var base = 1.65 / (5 / 1024);
+        // アークタンジェントを求める
+        var radian = Math.atan2(x - base, z - base);
+        // ラジアンから角度へ変更し、値を0から360になるように調整
+        return radian * (180 / Math.PI) + 180;
+    }
+
+    // 加速度からどの方向で動いているのか求める関数
+    function direction(key) {
+        var point = points[key].slice(-20);
+        var max = 400, min = 260;
+        var max_key = 0, min_key = 0;
+
+        for (var i = 0; i < point.length; i++) {
+            if (point[i] > max) {
+                max_key = i;
+                max = point[i];
+            }
+            if (point[i] < min) {
+                min_key = i;
+                min = point[i];
+            }
+        }
+
+        // しきい値よりも小さいブレだったらfalseを返却する
+        if (min >= 260 && max <= 400) {
+            return false;
+        }
+
+        // maxとminのキーを比較して、大きい方がプラス、小さいほうがマイナスとする
+        return max_key - min_key;
+    }
+
+    var pie = d3.layout.pie()
+        .startAngle(-90 * (Math.PI / 180))
+        .endAngle(270 * (Math.PI / 180))
+        .sort(null);
+
+    var arc = d3.svg.arc()
+        .innerRadius(50)
+        .outerRadius(100);
+
+    var colorX = d3.scale.ordinal()
+          .range(["red","green"]);
+
+    var colorY = d3.scale.ordinal()
+          .range(["orange","blue"]);
+
+    function circleY(degress) {
+        stage
+            .append("g")
+            .attr("class", "circle")
+            .selectAll("path")
+            .data(pie([degress / 360 * 100, (360 - degress) / 360 * 100]))
+            .enter()
+            .append("path")
+            .attr("transform", "translate(700, 500)")
+            .attr("d", function(c) { return arc(c); })
+            .attr("fill",function(d) { return colorY(d.data); }); 
+    }
+
+    function circleX(degress) {
+        stage
+            .append("g")
+            .attr("class", "circle")
+            .selectAll("path")
+            .data(pie([degress / 360 * 100, (360 - degress) / 360 * 100]))
+            .enter()
+            .append("path")
+            .attr("transform", "translate(450, 500)")
+            .attr("d", function(c) { return arc(c); })
+            .attr("fill",function(d) { return colorX(d.data); }); 
+    }
+
+    socket.onmessage = function(e) {
+        var values = JSON.parse(e.data);
+        update(values[1], 'x');
+        update(values[2], 'y');
+        update(values[3], 'z');
+        stage.selectAll(".fourtext").remove();
+
+        textUpdate(values[1], 30, 30);
+        textUpdate(degress(values[1], values[3]), 200, 30);
+        textUpdate(values[2], 30, 50);
+        textUpdate(degress(values[2], values[3]), 200, 50);
+        textUpdate(values[3], 30, 70);
+
+        stage.selectAll(".circle").remove();
+        circleX(degress(values[1], values[3]));
+        circleY(degress(values[2], values[3]));
+
+        var x_move = direction('x');
+        if (x_move !== false) {
+            textUpdate(x_move > 0 ? "x move: +" : "x move: -", 400, 30);
+        } else {
+            textUpdate("no x move", 400, 30);
+        }
+
+        var y_move = direction('y');
+        if (y_move !== false) {
+            textUpdate(y_move > 0 ? "y move: +" : "y move: -", 400, 50);
+        } else {
+            textUpdate("no y move", 400, 50);
+        }
+    };
+
+    function textUpdate(value, x, y) {
+        stage.append("text").attr("class", "fourtext").attr("x", x).attr("y", y).text(value);
+    }
+
+    function update(value, key) {
+        points[key].push(value);
+
+        if(points[key].length > 800/10) {
+            points[key].shift();
+        }
+
+        // 削除する
+        stage.selectAll("." + key).remove();
+
+        // 描画する
+        stage.append("path")
+        .attr("d", d3Line(points[key]))
+        .attr("stroke", colors(point_colors[key]))
+        .attr("fill", "none")
+        .attr("class", key)
+        .attr("opacity", 3);
+    }
+};
+</script>
+</html>
