@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import re
 import sys
 import datetime
 import json
@@ -14,37 +15,42 @@ class TemperatureApplication(object):
         if path == '/':
             start_response("200 OK", [("Content-Type", "text/html")])
             return open('./temperature_template.html')
-        elif path == "/temperature/today/average":
-            conn = sqlite3.connect('./temperature_sensor.sqlite')
-            result = conn.execute(
-                """
-                SELECT
-                    strftime("%Y-%m-%d %H:%M", created) as min,
-                    AVG(temperature) as avg
-                 FROM
-                  temperature
-                WHERE
-                  min LIKE ?
-                GROUP BY min
-                """
-                ,
-                [
-                    #datetime.datetime.now().strftime("%Y-%m-%d%%")
-                    '2016-02-10 %'
-                ]
-            )
-            lines = []
 
-            for line in result:
-                lines.append(
-                    dict({
-                        'date': line[0],
-                        'temperature': line[1]
-                    })
+        path_lists = path.split("/")
+
+        # /temperature
+        if path_lists[1] == "temperature":
+            if path_lists[3] == "average":
+                # /temperature/2015-01-01/average
+                conn = sqlite3.connect('./temperature_sensor.sqlite')
+                result = conn.execute(
+                    """
+                    SELECT
+                        strftime("%Y-%m-%d %H:%M", created) as min,
+                        AVG(temperature) as avg
+                     FROM
+                      temperature
+                    WHERE
+                      min LIKE ?
+                    GROUP BY min
+                    """
+                    ,
+                    [
+                        '{0} %'.format(path_lists[2])
+                    ]
                 )
+                lines = []
 
-            start_response("200 OK", [("Content-Type", "application/json")])
-            return json.dumps(lines)
+                for line in result:
+                    lines.append(
+                        dict({
+                            'date': line[0],
+                            'temperature': line[1]
+                        })
+                    )
+
+                start_response("200 OK", [("Content-Type", "application/json")])
+                return json.dumps(lines)
         else:
             raise Exception("404 Not found")
 
