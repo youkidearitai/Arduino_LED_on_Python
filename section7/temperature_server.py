@@ -36,7 +36,12 @@ class TemperatureApplication(object):
             lines = []
 
             for line in result:
-                lines.append(line)
+                lines.append(
+                    dict({
+                        'date': line[0],
+                        'temperature': line[1]
+                    })
+                )
 
             start_response("200 OK", [("Content-Type", "application/json")])
             return json.dumps(lines)
