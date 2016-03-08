@@ -20,6 +20,7 @@ class TemperatureApplication(object):
 
         # /temperature
         if path_lists[1] == "temperature":
+            date_time = datetime.datetime.strptime(path_lists[2], "%Y-%m-%dT%H:%M:%S.%fZ")
             if path_lists[3] == "average":
                 # /temperature/2015-01-01/average
                 conn = sqlite3.connect('./temperature_sensor.sqlite')
@@ -36,7 +37,7 @@ class TemperatureApplication(object):
                     """
                     ,
                     [
-                        '{0} %'.format(path_lists[2])
+                        '{0} %'.format(date_time.strftime("%Y-%m-%d"))
                     ]
                 )
                 lines = []
