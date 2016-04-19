@@ -10,15 +10,23 @@
 <div id="d3graph" style="border:1px solid #FFF; margin-bottom:10px"></div>
 <div id="angle"></div>
 </body>
+<form>
+    <select name="year-date">
+        <option value="2016-02-10">2016-02-10</option>
+    </select>
+</form>
 <script type="text/javascript">
+
 window.onload = function() {
     var stage;
-    stage = d3.select("#d3graph").append("svg:svg").attr("width", 800).attr("height", 600);
+    stage = d3.select("#d3graph").append("svg:svg").attr("width", 1300).attr("height", 650);
+
+    var graph_scale = 1300 / 1400;
 
     var colors = d3.scale.category10();
     var d3Line = d3.svg.line()
-    .x(function(d,i){return i * 10})
-    .y(function(d,i){return (800 - d) / 1024 * 600});
+    .x(function(d,i){return i * graph_scale})
+    .y(function(d,i){return (800 - d) / 1024 * 550});
 
     var points = {
         x: new Array()
@@ -32,33 +40,54 @@ window.onload = function() {
     var select_date = new Date();
     var select_date = new Date("2016-02-10");
 
-    d3.json("temperature/" + select_date.toISOString() + "/average", function(error, values) {
-        for (var i = 0, len = values.length; i < len; i++) {
-            update(values[i].temperature, 'x');
+    function requestHtml(select_date) {
+        points.x = new Array();
+
+        // 削除する
+        stage.selectAll(".x").remove();
+        d3.json("temperature/" + select_date.toISOString() + "/average", function(error, values) {
+            for (var i = 0, min = 0, size = values.length, len = 1440; min < len; min++) {
+                if (i >= size) {
+                    updateValue(25.0, 'x');
+                    continue;
+                }
+
+                var d = new Date(values[i].date);
+                if ((d.getHours() * 60) + d.getMinutes() == min) {
+                    updateValue(values[i].temperature, 'x');
+                    i++;
+                } else {
+                    updateValue(25.0, 'x');
+                    continue;
+                }
+            }
+
+            update('x');
+        });
+    }
+
+    requestHtml(select_date);
+
+    function updateValue(value, key) {
+        points[key].push(value);
+
+        if(points[key].length > 1440) {
+            points[key].shift();
         }
-    });
+    }
 
     function textUpdate(value, x, y) {
         stage.append("text").attr("class", "fourtext").attr("x", x).attr("y", y).text(value);
     }
 
-    function update(value, key) {
-        points[key].push(value);
-
-        if(points[key].length > 800/10) {
-            points[key].shift();
-        }
-
-        // 削除する
-        stage.selectAll("." + key).remove();
-
+    function update(key) {
         // 描画する
         stage.append("path")
-        .attr("d", d3Line(points[key]))
-        .attr("stroke", colors(point_colors[key]))
-        .attr("fill", "none")
-        .attr("class", key)
-        .attr("opacity", 3);
+            .attr("d", d3Line(points[key]))
+            .attr("stroke", colors(point_colors[key]))
+            .attr("fill", "none")
+            .attr("class", key)
+            .attr("opacity", 3);
     }
 };
 </script>

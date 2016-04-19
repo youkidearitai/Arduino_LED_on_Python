@@ -27,7 +27,7 @@ class TemperatureApplication(object):
                 result = conn.execute(
                     """
                     SELECT
-                        strftime("%Y-%m-%d %H:%M", created) as min,
+                        strftime("%Y/%m/%d %H:%M:00", created) as min,
                         AVG(temperature) as avg
                      FROM
                       temperature
@@ -37,7 +37,7 @@ class TemperatureApplication(object):
                     """
                     ,
                     [
-                        '{0} %'.format(date_time.strftime("%Y-%m-%d"))
+                        '{0} %'.format(date_time.strftime("%Y/%m/%d"))
                     ]
                 )
                 lines = []
@@ -56,6 +56,6 @@ class TemperatureApplication(object):
             raise Exception("404 Not found")
 
 if __name__ == "__main__":
-    server = pywsgi.WSGIServer(('127.0.0.1', 8080), TemperatureApplication())
+    server = pywsgi.WSGIServer(('127.0.0.1', 8081), TemperatureApplication())
     server.serve_forever()
 
